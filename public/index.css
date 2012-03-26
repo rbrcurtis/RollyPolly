@@ -1,0 +1,28 @@
+body,
+html {
+  width: 100%;
+  height: 100%;
+}
+#chatWrapper {
+  border: 1px solid #000;
+  margin-left: auto;
+  margin-right: auto;
+  height: 95%;
+  width: 400px;
+}
+#chatHeader {
+  border: 1px solid #000;
+  width: 100%;
+  height: 10%;
+}
+#chatPanel {
+  border: 1px solid #000;
+  width: 100%;
+  height: 80%;
+  overflow: scroll;
+}
+#chatInput {
+  border: 1px solid #000;
+  width: 100%;
+  height: 10%;
+}

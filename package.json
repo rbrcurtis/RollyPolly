@@ -1,0 +1,15 @@
+{
+  "author": "rbrcurtis",
+  "name": "RollyPolly",
+  "version": "0.0.0",
+  "repository": {
+    "url": ""
+  },
+  "main": "rollypolly.coffee",
+  "engines": {
+    "node": "~0.6.9"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "optionalDependencies": {}
+}
