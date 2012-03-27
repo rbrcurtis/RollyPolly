@@ -1,3 +1,7 @@
+global.util = require 'util'
 roller = require './app/roller'
+
 global.log = (msg) -> console.log msg
-console.log roller.parse "3d20+4"
+global.dump = (preface, obj) -> console.log "#{preface} : #{util.inspect obj}"
+
+console.log roller.parse "1+5d6"
