@@ -17,8 +17,11 @@ global.notify = (title, msg, error = false) ->
 	else
 		console.log "#{title} : #{msg}".green
 
-global.log = (msg) -> console.log msg
-global.dump = (preface, obj) -> console.log "#{preface} : #{util.inspect obj}"
+global.log = (msg, obj, depth = 0) ->
+	if obj
+		console.log "#{msg} : #{util.inspect obj, null, depth}"
+	else
+		console.log "#{msg}"
 
 if process.env.PROC_MASTER
 

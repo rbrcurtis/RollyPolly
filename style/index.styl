@@ -2,6 +2,10 @@ body, html
 	width:100%
 	height:100%
 	
+*
+	margin: 0px
+	padding: 0px
+	
 	
 #chatWrapper
 	border: 1px solid black
@@ -11,17 +15,27 @@ body, html
 	width: 400px
 	
 #chatHeader
-	border: 1px solid black
+	border-bottom: 1px solid black
 	width: 100%
-	height: 10%
+	height: 5em
+	text-align:center
+	
+	img
+		padding: 20px 10px
 	
 #chatPanel
-	border: 1px solid black
 	width: 100%
 	height: 80%
-	overflow: scroll
+	overflow-y: scroll
 	
 #chatInput
-	border: 1px solid black
+	border-top: 1px solid black
 	width: 100%
-	height: 10%
+	height: 3em
+
+.chatMessage
+	padding: 5px
+	
+	img
+		vertical-align: -32%
+		padding-right: 5px

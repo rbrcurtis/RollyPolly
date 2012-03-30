@@ -3,6 +3,10 @@ html {
   width: 100%;
   height: 100%;
 }
+* {
+  margin: 0px;
+  padding: 0px;
+}
 #chatWrapper {
   border: 1px solid #000;
   margin-left: auto;
@@ -11,18 +15,28 @@ html {
   width: 400px;
 }
 #chatHeader {
-  border: 1px solid #000;
+  border-bottom: 1px solid #000;
   width: 100%;
-  height: 10%;
+  height: 5em;
+  text-align: center;
+}
+#chatHeader img {
+  padding: 20px 10px;
 }
 #chatPanel {
-  border: 1px solid #000;
   width: 100%;
   height: 80%;
-  overflow: scroll;
+  overflow-y: scroll;
 }
 #chatInput {
-  border: 1px solid #000;
+  border-top: 1px solid #000;
   width: 100%;
-  height: 10%;
+  height: 3em;
+}
+.chatMessage {
+  padding: 5px;
+}
+.chatMessage img {
+  vertical-align: -32%;
+  padding-right: 5px;
 }
