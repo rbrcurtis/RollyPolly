@@ -1,4 +1,4 @@
-#!/usr/bin/env /usr/local/bin/coffee
+#!/usr/bin/env ./node_modules/coffee-script/bin/coffee
 
 sys     = require 'util'
 proc    = require 'child_process'
