@@ -38,7 +38,6 @@ module.exports = new class RollyPollyClient
 		@panel.append "<div class='chatMessage'><img src='http://unicornify.appspot.com/avatar/#{hash}?s=20'width='25' height='25' title='#{user}'/>#{msg}</div>"
 			
 	getNickFromCookie: ->
-		alert document.cookie
 		if not document.cookie then return null
 		cs = document.cookie.split ';'
 		for c in cs
