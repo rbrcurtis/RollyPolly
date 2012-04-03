@@ -63,7 +63,7 @@ module.exports = new class RollyPollyClient
 		$("##{hash}").remove()
 		
 	_resize: =>	
-		@panel.css 'height', (@wrapper.height()-@header.height()-@input.height()-4)+"px"
+		@panel.css 'height', (@wrapper.height()-@header.height()-@input.height()-2)+"px"
 		
 
 module.exports = new RollyPollyClient
