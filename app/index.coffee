@@ -7,7 +7,7 @@ crypto  = require('crypto')
 
 class App
 	
-	run: (path) ->
+	run: (path, port) ->
 		
 		BUNDLE = '/bundle.js'
 
@@ -29,7 +29,7 @@ class App
 		
 		server.use express.static(path + '/public')
 		
-		server.listen 8080, ->
+		server.listen port, ->
 			addr = server.address()
 			console.log "listening on #{addr.address}:#{addr.port}"
 			

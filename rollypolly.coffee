@@ -25,17 +25,25 @@ global.log = (msg, obj, depth = 0) ->
 
 if process.env.PROC_MASTER
 
+	port = process.env.port or 8080
+
 	app = require './app'
-	app.run(__dirname)
+	app.run(__dirname, port)
 
 else
 	appPath = "#{__dirname}/app"
 	process.env.NODE_PATH+=":#{appPath}"
+
 	startMaster = ->
-		master = proc.spawn __filename, [], _.extend process.env, {PROC_MASTER:true}
+		process.env.PROC_MASTER = true
+		if process.argv[2] then process.env.port = process.argv[2]
+
+		master = proc.spawn __filename, [], process.env
 		master.stdout.on 'data', (buffer) -> console.log buffer.toString().trim() 
 		master.stderr.on 'data', (buffer) -> notify "ERROR", buffer.toString().trim(), true
+
 		return master
+
 	master = startMaster()
 
 	onChange = (file) =>
