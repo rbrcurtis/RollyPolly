@@ -3,7 +3,8 @@ stitch  = require 'stitch'
 stylus  = require 'stylus'
 sio     = require 'socket.io'
 roller  = require 'roller'
-crypto  = require('crypto')
+crypto  = require 'crypto'
+repo    = require 'repo'
 
 class App
 	
@@ -47,6 +48,7 @@ class App
 		
 	_onDisconnect: (socket) ->
 		log "#{socket.nick} disconnected"
+		repo.saveChatMsg socket.nick, socket.hash, "<i>disconnected</i>"
 		@io.sockets.emit 'part', socket.nick, socket.hash
 			
 	_onChat: (socket, msg) ->
@@ -61,6 +63,7 @@ class App
 		else
 			msg = roller.parse msg
 			@io.sockets.emit 'chat', socket.hash, msg
+			repo.saveChatMsg socket.nick, socket.hash, msg
 
 	_onNick: (socket,nick) ->
 		log "#{socket.nick} changing nick to '#{nick}'"
@@ -69,6 +72,7 @@ class App
 		hash = @_hash nick
 
 		@io.sockets.emit 'nick', socket.nick, socket.hash, nick, hash
+		repo.saveChatMsg socket.nick, socket.hash "<i>is now a pretty unicorn known as <img src='http://unicornify.appspot.com/avatar/#{hash}?s=20'width='25' height='25' title='#{nick}'/></i>"
 		socket.nick = nick
 		socket.hash = hash
 		
@@ -77,10 +81,17 @@ class App
 		if socket.nick? then return @_onNick socket, nick
 		socket.nick = nick
 		socket.hash = @_hash nick
-		log "socket #{socket.id} set nick to #{socket.nick}:#{socket.hash}"
-		@io.sockets.emit 'join', socket.nick, socket.hash
+		
+		log "socket #{socket.id} logged in as #{socket.nick}:#{socket.hash}"
+		
 		for id,s of @io.sockets.sockets
-			socket.emit('join', s.nick, s.hash) unless s.nick is nick
+			socket.emit('join', s.nick, s.hash)
+		
+		repo.getHistory (err, history) =>
+			log "history #{history.length}"
+			socket.emit 'history', history
+			@io.sockets.emit 'chat', socket.hash, "<i>joined</i>"
+			repo.saveChatMsg socket.nick, socket.hash, "<i>joined</i>"
 		
 
 module.exports = new App

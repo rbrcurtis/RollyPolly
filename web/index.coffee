@@ -23,11 +23,15 @@ module.exports = new class RollyPollyClient
 		@window.resize @_resize
 		
 		@socket = io.connect document.location.href
+		
+		@socket.on 'connect', =>
+			@panel.html ''
 		@socket.on 'chat', @_onChat
 		@socket.on 'login', @_login
 		@socket.on 'join', @_join
 		@socket.on 'nick', @_nick
 		@socket.on 'part', @_part
+		@socket.on 'history', @_history
 		
 		@input.keyup (e) =>
 			if e.keyCode is 13
@@ -37,6 +41,7 @@ module.exports = new class RollyPollyClient
 	_onChat: (hash, msg) =>
 		user = $("##{hash}").attr('title')
 		@panel.append "<div class='chatMessage'><img src='http://unicornify.appspot.com/avatar/#{hash}?s=20'width='25' height='25' title='#{user}'/>#{msg}</div>"
+		@panel.scrollTop @panel[0].scrollHeight
 			
 	getNickFromCookie: ->
 		if not document.cookie then return null
@@ -56,18 +61,20 @@ module.exports = new class RollyPollyClient
 		
 	_join: (user,hash) =>
 		if $("##{hash}").length>0 then return
-		@header.append("<img id='#{hash}' src='http://unicornify.appspot.com/avatar/#{hash}?s=40' title='#{user}'/>")
-		@_onChat hash, "<i>joined</i>"
+		@header.append "<img id='#{hash}' src='http://unicornify.appspot.com/avatar/#{hash}?s=40' title='#{user}'/>"
 		
 	_nick: (oldUser, oldHash, user, hash) =>
-		@header.append("<img id='#{hash}' src='http://unicornify.appspot.com/avatar/#{hash}?s=40' title='#{user}'/>")
+		@header.append "<img id='#{hash}' src='http://unicornify.appspot.com/avatar/#{hash}?s=40' title='#{user}'/>"
 		@_onChat oldHash, "<i>is now a pretty unicorn known as <img src='http://unicornify.appspot.com/avatar/#{hash}?s=20'width='25' height='25' title='#{user}'/></i>"
 		$("##{oldHash}").remove()
-		
 		
 	_part: (user, hash) =>
 		@_onChat hash, "<i>disconnected</i>"
 		$("##{hash}").remove()
+		
+	_history: (msgs) =>
+		for msg in msgs
+			@_onChat msg.hash, msg.msg
 		
 	_resize: =>	
 		@panel.css 'height', (@wrapper.height()-@header.height()-@input.height()-2)+"px"
