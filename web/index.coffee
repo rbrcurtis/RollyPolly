@@ -26,6 +26,7 @@ module.exports = new class RollyPollyClient
 		@socket.on 'chat', @_onChat
 		@socket.on 'login', @_login
 		@socket.on 'join', @_join
+		@socket.on 'nick', @_nick
 		@socket.on 'part', @_part
 		
 		@input.keyup (e) =>
@@ -57,6 +58,12 @@ module.exports = new class RollyPollyClient
 		if $("##{hash}").length>0 then return
 		@header.append("<img id='#{hash}' src='http://unicornify.appspot.com/avatar/#{hash}?s=40' title='#{user}'/>")
 		@_onChat hash, "<i>joined</i>"
+		
+	_nick: (oldUser, oldHash, user, hash) =>
+		@header.append("<img id='#{hash}' src='http://unicornify.appspot.com/avatar/#{hash}?s=40' title='#{user}'/>")
+		@_onChat oldHash, "<i>is now a pretty unicorn known as <img src='http://unicornify.appspot.com/avatar/#{hash}?s=20'width='25' height='25' title='#{user}'/></i>"
+		$("##{oldHash}").remove()
+		
 		
 	_part: (user, hash) =>
 		@_onChat hash, "<i>disconnected</i>"

@@ -17,6 +17,7 @@ class App
 		
 		@io = sio.listen server
 		@io.set 'log level', 0
+		@io.set 'transports', ['xhr-polling']
 		
 		@onConnection()
 		
@@ -53,18 +54,27 @@ class App
 		if msg is '' then return
 		log "got msg '#{msg}'"
 		if m = msg.match /\/nick ?(.*)/
-			if m[1]?
-				@_onLogin socket, m[1]
+			if m[1].length
+				@_onNick socket, m[1]
 			else
 				socket.emit 'login', true
 		else
 			msg = roller.parse msg
 			@io.sockets.emit 'chat', socket.hash, msg
+
+	_onNick: (socket,nick) ->
+		log "#{socket.nick} changing nick to '#{nick}'"
+		if not socket.nick? then return @_onLogin socket, nick
 		
+		hash = @_hash nick
+
+		@io.sockets.emit 'nick', socket.nick, socket.hash, nick, hash
+		socket.nick = nick
+		socket.hash = hash
+		
+			
 	_onLogin: (socket, nick) ->
-		if socket.nick?
-			log "#{socket.nick} changing nick to #{nick}"
-			@io.sockets.emit 'part', socket.nick, socket.hash
+		if socket.nick? then return @_onNick socket, nick
 		socket.nick = nick
 		socket.hash = @_hash nick
 		log "socket #{socket.id} set nick to #{socket.nick}:#{socket.hash}"
