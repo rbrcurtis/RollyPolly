@@ -40,7 +40,7 @@ class App
 			
 	onConnection: ->
 		@io.sockets.on 'connection', (socket) =>
-			log "connect!"
+			log "connect!", socket.id
 			socket.on 'chat', => @_onChat socket, arguments...
 			socket.on 'login', => @_onLogin socket, arguments...
 			socket.on 'disconnect', => @_onDisconnect socket
@@ -85,7 +85,7 @@ class App
 		log "socket #{socket.id} logged in as #{socket.nick}:#{socket.hash}"
 		
 		for id,s of @io.sockets.sockets
-			socket.emit('join', s.nick, s.hash)
+			socket.emit('join', socket.nick, socket.hash)
 		
 		repo.getHistory (err, history) =>
 			log "history #{history.length}"

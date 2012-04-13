@@ -1,0 +1,6 @@
+<table id="skeleton">
+<tr id="headerRow"><td id="header"><%- (require 'views/header')() %></td></tr>
+<tr id="contentRow"><td id="content"></td></tr>
+<tr id="footerRow"><td id="footer"></td></tr>
+
+</table>

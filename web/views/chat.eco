@@ -1,0 +1,14 @@
+<table align="center" id="chatTable">
+	<tr>
+		<td id="chatHeader"></td>
+	</tr>
+	<tr>
+		<td id="chatPanelTd"><div id="chatPanel"></div></td>
+	</tr>
+	<tr>
+		<td id="chatInputTd">
+			<textarea id="chatInput"></textarea>
+		</td>
+	</tr>
+	
+</table>

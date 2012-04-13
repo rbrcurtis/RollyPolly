@@ -31,11 +31,8 @@ module.exports =
 		
 				str = str.replace /\(?([0-9]+)d([0-9]+)\)?/g, roll
 				
-				if rolls.length>1 
-					# 1+(5d6) [1+(4+1+5+2+3 = 15) = 16]
-					str = "#{o} [#{str} = #{eval str}]"
-				else
-					str = "#{o} [#{eval str}]"
+				# 1+(5d6) [1+(4+1+5+2+3 = 15) = 16]
+				str = "#{o} [#{str} = #{eval str}]"
 
 			ret+=str+" "
 				

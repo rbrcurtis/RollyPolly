@@ -6,8 +6,28 @@ html {
 * {
   margin: 0px;
   padding: 0px;
+  border-spacing: 0px;
 }
-#chatWrapper {
+#skeleton {
+  width: 100%;
+  height: 100%;
+}
+#header {
+  width: 100%;
+  height: 40px;
+  border-bottom: 1px solid #000;
+}
+#header #settings {
+  float: right;
+  width: 40px;
+  height: 100%;
+  background: url("/images/icons/settings.png") no-repeat center;
+  background-size: 70%;
+}
+#footerRow {
+  height: 0px;
+}
+#chatTable {
   border: 1px solid #000;
   margin-left: auto;
   margin-right: auto;
@@ -23,15 +43,20 @@ html {
 #chatHeader img {
   padding: 20px 10px;
 }
-#chatPanel {
+#chatPanelTd {
   width: 100%;
   height: 80%;
+}
+#chatPanel {
+  width: 100%;
   overflow-y: scroll;
 }
-#chatInput {
-  border-top: 1px solid #000;
-  width: 100%;
+#chatInputTd {
   height: 3em;
+}
+#chatInput {
+  width: 100%;
+  height: 100%;
 }
 .chatMessage {
   padding: 5px;
