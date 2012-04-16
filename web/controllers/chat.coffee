@@ -20,6 +20,7 @@ module.exports = class ChatController extends Controller
 		@socket = io.connect document.location.href
 		
 		@socket.on 'connect', =>
+			log "connected"
 			@panel.html ''
 		@socket.on 'chat', @_onChat
 		@socket.on 'login', @_login

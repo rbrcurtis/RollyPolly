@@ -48,6 +48,13 @@ class App
 		
 	_onDisconnect: (socket) ->
 		log "#{socket.nick} disconnected"
+		
+		if s.nick is nick and id isnt socket.id
+			if s.nick is nick
+				log "duplicate"
+				return
+			
+			
 		repo.saveChatMsg socket.nick, socket.hash, "<i>disconnected</i>"
 		@io.sockets.emit 'part', socket.nick, socket.hash
 			
@@ -79,10 +86,17 @@ class App
 			
 	_onLogin: (socket, nick) ->
 		if socket.nick? then return @_onNick socket, nick
+		
 		socket.nick = nick
 		socket.hash = @_hash nick
-		
+
 		log "socket #{socket.id} logged in as #{socket.nick}:#{socket.hash}"
+			
+		
+		for id,s of @io.sockets.sockets
+			if s.nick is nick and id isnt socket.id
+				log 'duplicate'
+				return
 		
 		for id,s of @io.sockets.sockets
 			socket.emit('join', socket.nick, socket.hash)

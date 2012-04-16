@@ -15,14 +15,16 @@ window.addEventListener 'blur', ->
 	
 
 window.notify = (title, msg, icon = 'images/icons/chat.png') ->
-	if not window.focused
-		if window.webkitNotifications?
-			n = window.webkitNotifications.createNotification(icon, title, msg)
-			n.show()
-			setTimeout ->
-				n.cancel()
-			, 3000
+	try
+		if not window.focused
+			if window.webkitNotifications?
+				n = window.webkitNotifications.createNotification(icon, title, msg)
+				n.show()
+				setTimeout ->
+					n.cancel()
+				, 3000
+				
+			else if window.fluid?
+				log "TODO fluid notifications"
 			
-		else if window.fluid?
-			log "TODO fluid notifications"
-			
+	catch e
