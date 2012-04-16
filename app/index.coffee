@@ -81,7 +81,7 @@ class App
 		hash = @_hash nick
 
 		@io.sockets.emit 'nick', socket.nick, socket.hash, nick, hash
-		repo.saveChatMsg socket.nick, socket.hash "<i>is now a pretty unicorn known as <img src='http://unicornify.appspot.com/avatar/#{hash}?s=20'width='25' height='25' title='#{nick}'/></i>"
+		repo.saveChatMsg socket.nick, socket.hash, "<i>is now a pretty unicorn known as <img src='http://unicornify.appspot.com/avatar/#{hash}?s=20'width='25' height='25' title='#{nick}'/></i>"
 		socket.nick = nick
 		socket.hash = hash
 		
