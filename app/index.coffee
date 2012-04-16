@@ -49,6 +49,8 @@ class App
 	_onDisconnect: (socket) ->
 		log "#{socket.nick} disconnected"
 		
+		return
+		
 		for id,s of @io.sockets.sockets
 			if socket.nick is s.nick and s.id isnt socket.id
 				log "duplicate"
