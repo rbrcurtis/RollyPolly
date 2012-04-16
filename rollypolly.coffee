@@ -19,9 +19,9 @@ global.notify = (title, msg, error = false) ->
 
 global.log = (msg, obj, depth = 0) ->
 	if obj
-		console.log "#{msg} : #{util.inspect obj, null, depth}"
+		console.log "#{new Date()} #{msg} : #{util.inspect obj, null, depth}"
 	else
-		console.log "#{msg}"
+		console.log "#{new Date()} #{msg}"
 
 if process.env.PROC_MASTER
 
