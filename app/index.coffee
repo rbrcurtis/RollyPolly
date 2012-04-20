@@ -51,7 +51,7 @@ class App
 	_onAuthorization: (data, accept) =>
 		
 		log "auth!"
-		if true then return accept null, true
+		# return accept null, true
 		
 		
 		try

@@ -10,7 +10,12 @@ module.exports = class LoginController extends Controller
 		@form = $('#loginForm')
 		@username = $('#username')
 		@password = $('#password')
+		@register = $('#register')
 
 		@form.on 'submit', =>
 			log 'submit!'
 			return false
+			
+		@register.on 'click', =>route 'register'
+
+	

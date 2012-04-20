@@ -1,12 +1,10 @@
-ChatController = require 'controllers/chat'
-LoginController = require 'controllers/login'
-
 
 module.exports = new class Router
 	
 	routes:
-		'chat': new ChatController
-		'login': new LoginController
+		'chat': new (require 'controllers/chat')
+		'login': new (require 'controllers/login')
+		'register': new (require 'controllers/register')
 		
 	constructor: ->
 		@route 'chat'
@@ -20,3 +18,4 @@ module.exports = new class Router
 		@current?.deactivate()
 		@current = @routes[route]
 		@current.activate()
+

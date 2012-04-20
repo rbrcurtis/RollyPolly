@@ -110,6 +110,44 @@ html {
 #loginWrapper #login table input {
   width: 100px;
 }
+#loginWrapper #login table #register {
+  float: right;
+}
 #loginWrapper input[type="submit"] {
+  visibility: hidden;
+}
+#registerWrapper {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  background: #808080;
+  opacity: 0.9;
+}
+#registerWrapper #register {
+  background: #fff;
+  border: 1px solid #000;
+  width: 200px;
+  position: absolute;
+  top: 50%;
+  margin-top: -100px;
+  left: 50%;
+  margin-left: -100px;
+}
+#registerWrapper #register table {
+  padding: 20px 10px;
+}
+#registerWrapper #register table td {
+  padding: 5px;
+}
+#registerWrapper #register table input {
+  width: 100px;
+}
+#registerWrapper #register table #register {
+  float: right;
+}
+#registerWrapper input[type="submit"] {
   visibility: hidden;
 }

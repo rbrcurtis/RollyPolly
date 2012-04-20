@@ -1,7 +1,12 @@
-#loginWrapper
-	#login
-		form#loginForm
+#registerWrapper
+	#register
+		form#registerForm
 			table
+				tr
+					td
+						label(for="email") email
+					td
+						input(type="text")#email
 				tr
 					td
 						label(for="username") username
@@ -12,8 +17,4 @@
 						label(for="password") password
 					td
 						input(type="password")#password
-				tr
-					td
-					td
-						a#register(href="#") register
 			input(type="submit")
