@@ -12,10 +12,15 @@ module.exports = new class RollyPollyClient
 			
 		
 	run: ->
-		@_resize()
-		@window.resize @_resize
+		# @_resize()
+		# @window.resize @_resize
 		
 		@body.html require 'views/main'
+		
+		@header = $('#header')
+		@footer = $('#footer')
+		
+		@header.html require 'views/header'
 
 		@chatScreen = new Chat
 		@settingsScreen = new Settings
@@ -30,7 +35,8 @@ module.exports = new class RollyPollyClient
 		
 		
 		@chatScreen.activate()
+		# @settingsScreen.activate()
 
 
-	_resize: =>	
-		@body.css 'height', (@window.height())+"px"
+	# _resize: =>	
+		# @body.css 'height', (@window.height())+"px"

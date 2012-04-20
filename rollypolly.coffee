@@ -1,10 +1,10 @@
 #!/usr/bin/env ./node_modules/coffee-script/bin/coffee
 
-sys     = require 'util'
-proc    = require 'child_process'
-colors  = require 'colors'
-_       = require 'underscore'
-fs      = require 'fs'
+sys         = require 'util'
+proc        = require 'child_process'
+colors      = require 'colors'
+_           = require 'underscore'
+fs          = require 'fs'
 global.util = require 'util'
 
 global.notify = (title, msg, error = false) ->

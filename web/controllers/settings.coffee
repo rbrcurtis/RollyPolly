@@ -5,6 +5,6 @@ module.exports = class Settings extends Controller
 	activate: ->
 		super
 		
-		@content.html 'foo'
+		@content.html require 'views/jaja'
 		
 		

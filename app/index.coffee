@@ -1,10 +1,11 @@
-express = require 'express'
-stitch  = require 'stitch'
-stylus  = require 'stylus'
-sio     = require 'socket.io'
-roller  = require 'roller'
-crypto  = require 'crypto'
-repo    = require 'repo'
+express 	= require 'express'
+stitch		= require 'stitch'
+stylus		= require 'stylus'
+sio			= require 'socket.io'
+roller		= require 'roller'
+crypto		= require 'crypto'
+repo		= require 'repo'
+jade		= require 'jade'
 
 class App
 	
@@ -12,7 +13,13 @@ class App
 		
 		BUNDLE = '/bundle.js'
 
-		bundle = stitch.createPackage paths: [path + '/web']
+		bundle = stitch.createPackage
+			paths: [path + '/web']
+			compilers:
+				jade: (module, filename) ->
+					source = require('fs').readFileSync(filename, 'utf8')
+					source = "module.exports = " + jade.compile(source, {compileDebug : false, client: true}) + ";"
+					module._compile(source, filename)
 		
 		server = express.createServer()
 		
@@ -25,9 +32,9 @@ class App
 		server.get BUNDLE, bundle.createServer()
 		
 		server.use stylus.middleware
-			src:  path + '/style'
-			dest: path + '/public'
-			force: true
+			src:	path + '/style'
+			dest:	path + '/public'
+			force:	true
 		
 		server.use express.static(path + '/public')
 		
