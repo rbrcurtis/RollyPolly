@@ -5,6 +5,7 @@ module.exports = class ChatController extends Controller
 	constructor: ->
 		super
 		@window  = $(window)
+		@body    = $('body')
 		
 		
 	activate: ->
@@ -18,6 +19,11 @@ module.exports = class ChatController extends Controller
 		@input   = $('#chatInput')
 		
 		@socket = io.connect document.location.href
+	
+		@socket.on 'error', (e) =>
+			log "error connecting to socket: #{e}"
+			if e is 'handshake unauthorized'
+				route 'login'
 		
 		@socket.on 'connect', =>
 			log "connected"
@@ -36,7 +42,7 @@ module.exports = class ChatController extends Controller
 
 	deactivate: ->
 		super
-		log "wonder twin powers deactivate!"
+		log "chat deactivate!"
 		@socket.disconnect()
 		
 		

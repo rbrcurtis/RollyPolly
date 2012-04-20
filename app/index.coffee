@@ -1,4 +1,5 @@
 express 	= require 'express'
+connect 	= require 'connect'
 stitch		= require 'stitch'
 stylus		= require 'stylus'
 sio			= require 'socket.io'
@@ -27,6 +28,8 @@ class App
 		@io.set 'log level', 0
 		@io.set 'transports', ['xhr-polling']
 		
+		@io.set 'authorization', @_onAuthorization
+		
 		@onConnection()
 		
 		server.get BUNDLE, bundle.createServer()
@@ -44,6 +47,45 @@ class App
 			
 	_hash: (nick) ->
 		crypto.createHash('md5').update(nick).digest("hex");
+		
+	_onAuthorization: (data, accept) =>
+		
+		log "auth!"
+		if true then return accept null, true
+		
+		
+		try
+			cookies = if data.headers.cookie then connect.utils.parseCookie(data.headers.cookie) else {}
+			data.token = cookies['t']
+			unless data.token?
+				log "cookie not found"
+				log 'cookies', cookies
+				return accept(null, false)
+			else
+				log "found auth cookie: #{data.token}"
+				
+				# TODO: This currently denies access to a second window. We should probably reverse this so the last one
+				# in wins, to match the current system.
+				# if @controller.hasUser data.token?
+					# return accept(null, false)
+					
+				repo.getUserByToken data.token, (err, user) =>
+					if err?
+						log "error finding user"
+						dump err
+						return accept(null, false)
+					if user?
+						log "authentication successful for user #{util.inspect user}"
+						data.user = user
+						return accept(null, true)
+					else
+						log 'user not found'
+						return accept(null, false)
+				
+		catch ex
+			log "authentication exception: #{util.inspect ex}"
+			return accept(null, false)
+	
 			
 	onConnection: ->
 		@io.sockets.on 'connection', (socket) =>

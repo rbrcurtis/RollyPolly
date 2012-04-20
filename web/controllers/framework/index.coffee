@@ -4,12 +4,10 @@
 module.exports = class Controller
 	
 	constructor: ->
-		log "controller"
+		@window  = $(window)
+		@body    = $('body')
 		@content = $('#content')
 	
 	activate: ->
-		log 'Controller.activate', Controller.active 
-		window.active?.deactivate()
-		window.active = @
 
 	deactivate: ->

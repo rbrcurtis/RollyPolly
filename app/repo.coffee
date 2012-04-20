@@ -48,4 +48,9 @@ module.exports = new class Repo
 			
 	getHistory: (cb) ->
 		@_find 'chat', {time:{$gt:new Date().getTime()-1000*60*60*24}}, cb
-
+		
+	getUserByToken: (token, callback) ->
+		callback null, {
+			username: 'ryan'
+			email: 'wednesday@gmail.com'
+		}

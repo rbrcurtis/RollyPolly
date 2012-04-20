@@ -1,7 +1,4 @@
 require 'globals'
-Chat = require 'controllers/chat'
-Settings = require 'controllers/settings'
-
 
 
 module.exports = new class RollyPollyClient
@@ -22,9 +19,6 @@ module.exports = new class RollyPollyClient
 		
 		@header.html require 'views/header'
 
-		@chatScreen = new Chat
-		@settingsScreen = new Settings
-
 		@settings = $('#settings')
 		@settings.click (e) =>
 			 if window.webkitNotifications?
@@ -33,10 +27,8 @@ module.exports = new class RollyPollyClient
 			 else
 			 	alert 'this setting only works in chrome'
 		
-		
-		@chatScreen.activate()
-		# @settingsScreen.activate()
 
+		require 'router'
 
 	# _resize: =>	
 		# @body.css 'height', (@window.height())+"px"
