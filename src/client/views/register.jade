@@ -1,20 +1,20 @@
 #registerWrapper
 	#register
-		form#registerForm
+		form(action="/register", method="post")#registerForm
 			table
 				tr
 					td
 						label(for="email") email
 					td
-						input(type="text")#email
+						input(name="email", type="text")#email
 				tr
 					td
 						label(for="username") username
 					td
-						input(type="text")#username
+						input(name="username", type="text")#username
 				tr
 					td
 						label(for="password") password
 					td
-						input(type="password")#password
+						input(name="password", type="password")#password
 			input(type="submit")

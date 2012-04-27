@@ -15,16 +15,16 @@ class App
 		BUNDLE = '/bundle.js'
 
 		bundle = stitch.createPackage
-			paths: [path + '/web']
+			paths: [path + '/src/client']
 			compilers:
 				jade: (module, filename) ->
 					source = require('fs').readFileSync(filename, 'utf8')
 					source = "module.exports = " + jade.compile(source, {compileDebug : false, client: true}) + ";"
 					module._compile(source, filename)
 		
-		server = express.createServer()
+		@server = express.createServer()
 		
-		@io = sio.listen server
+		@io = sio.listen @server
 		@io.set 'log level', 0
 		@io.set 'transports', ['xhr-polling']
 		
@@ -32,21 +32,32 @@ class App
 		
 		@onConnection()
 		
-		server.get BUNDLE, bundle.createServer()
-		
-		server.use stylus.middleware
+		@server.use express.static(path + '/public')
+		@server.use express.bodyParser()
+		@server.use stylus.middleware
 			src:	path + '/style'
 			dest:	path + '/public'
 			force:	true
 		
-		server.use express.static(path + '/public')
+		@server.get BUNDLE, bundle.createServer()
 		
-		server.listen port, ->
-			addr = server.address()
+		@server.post '/register', @_register
+		@server.post '/login', @_login
+
+		@server.listen port, =>
+			addr = @server.address()
 			console.log "listening on #{addr.address}:#{addr.port}"
 			
 	_hash: (nick) ->
-		crypto.createHash('md5').update(nick).digest("hex");
+		crypto.createHash('md5').update(nick).digest("hex")
+		
+	_register: (req, res) =>
+		repo.createUser req.body.email, req.body.username, req.body.password, (user) ->
+			
+		
+		
+	_login: (req, res) =>
+		repo.createUser req.body.email, req.body.username, req.body.password
 		
 	_onAuthorization: (data, accept) =>
 		
@@ -64,11 +75,6 @@ class App
 			else
 				log "found auth cookie: #{data.token}"
 				
-				# TODO: This currently denies access to a second window. We should probably reverse this so the last one
-				# in wins, to match the current system.
-				# if @controller.hasUser data.token?
-					# return accept(null, false)
-					
 				repo.getUserByToken data.token, (err, user) =>
 					if err?
 						log "error finding user"
@@ -134,7 +140,7 @@ class App
 		socket.nick = nick
 		socket.hash = hash
 		
-			
+	# TODO deprecate
 	_onLogin: (socket, nick) ->
 		if socket.nick? then return @_onNick socket, nick
 		

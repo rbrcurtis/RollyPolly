@@ -148,6 +148,3 @@ html {
 #registerWrapper #register table #register {
   float: right;
 }
-#registerWrapper input[type="submit"] {
-  visibility: hidden;
-}

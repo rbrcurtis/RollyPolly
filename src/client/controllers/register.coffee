@@ -13,6 +13,10 @@ module.exports = class RegisterController extends Controller
 		@password = $('#password')
 
 		@form.on 'submit', =>
-			log 'submit!'
-			return false
+			username = @username.val()
+			email    = @email.val()
+			pass     = @password.val()
+			
+			log "register!"
+			return true
 			

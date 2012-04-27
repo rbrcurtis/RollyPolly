@@ -27,11 +27,11 @@ if process.env.PROC_MASTER
 
 	port = process.env.port or 8080
 
-	app = require './app'
+	app = require './src/server'
 	app.run(__dirname, port)
 
 else
-	appPath = "#{__dirname}/app"
+	appPath = "#{__dirname}/src/server"
 	process.env.NODE_PATH+=":#{appPath}"
 
 	startMaster = ->

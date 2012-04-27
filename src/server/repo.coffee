@@ -1,4 +1,5 @@
 mongo = require 'mongodb'
+crypto = require 'crypto'
 
 module.exports = new class Repo
 	
@@ -43,14 +44,55 @@ module.exports = new class Repo
 						
 	saveChatMsg: (user, hash, msg) ->
 		log "save chat #{user}:#{hash}:#{msg}"
-		@_insert 'chat', {user,hash,msg,time:new Date().getTime()}, (err) ->
+		@_insert 'messages', {user,hash,msg,time:new Date().getTime()}, (err) ->
 			if err? then log err 
 			
 	getHistory: (cb) ->
 		@_find 'chat', {time:{$gt:new Date().getTime()-1000*60*60*24}}, cb
 		
 	getUserByToken: (token, callback) ->
-		callback null, {
-			username: 'ryan'
-			email: 'wednesday@gmail.com'
-		}
+		@_find 'users', {token}, callback
+		
+	createUser: (email, username, password, callback) ->
+		[salt, securePass] = @hashPassword password
+		@_insert 'users', {email, username, salt, password:securePass, token:randomText()}
+		
+	authUser: (email, password, callback) ->
+		unless callback then return
+		@_find 'users', {email}, (err, user) =>
+			if err
+				log 'user lookup err', err
+				return callback false
+			else if user.length is 0
+				log 'user not found', email
+				return callback false
+			else if user.length > 1 
+				log 'too many users found', email
+				return callback false
+			else user = user[0]
+			
+			securePass = @hash password, user.salt
+			log 'securepass', securePass
+			callback securePass is user.password
+			 
+	hash: (msg, key) ->
+		crypto.createHmac("sha256", key).update(msg).digest "hex"
+		
+	randomText: ->
+		text = ""
+		possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*"
+		i = 0
+		
+		while i < 40
+			text += possible.charAt(Math.floor(Math.random() * possible.length))
+			i++
+		return text
+
+	hashPassword: (password) ->
+		
+		
+			
+		salt = generateSalt()
+		securePass = @hash password, salt
+		
+		return [salt, securePass]
