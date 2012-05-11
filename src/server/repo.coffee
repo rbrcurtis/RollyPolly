@@ -24,13 +24,11 @@ module.exports = new class Repo
 		@_onReady =>
 			Repo.db.collection collection, (err, col) =>
 				return cb err if err?
-				col.update {_id:doc._id}, doc, {upsert:true}, (err, docs) =>
-					return cb err if err?
-					cb(null) if cb?
+				col.update {_id:doc._id}, doc, {upsert:true}, cb
 					
 	
 	_find: (collection, query, cb) ->
-		log "_find: (#{collection}, #{JSON.stringify query}, #{cb?}) ->"
+		log "_find: ", JSON.stringify {collection, query, cb:cb?}
 		@_onReady =>
 			Repo.db.collection collection, (err, col) =>
 				return cb err, null if err?
@@ -40,11 +38,12 @@ module.exports = new class Repo
 						return cb err, null if err?
 						cb null, docs
 						
+	updateDisplayName: (user) ->
+		@_insert 'users', user
 						
-						
-	saveChatMsg: (user, hash, msg) ->
-		log "save chat #{user}:#{hash}:#{msg}"
-		@_insert 'messages', {user,hash,msg,time:new Date().getTime()}, (err) ->
+	saveChatMsg: (userId, msg) ->
+		log "save chat", userId, msg, 0
+		@_insert 'messages', {userId,msg,time:new Date()}, (err) ->
 			if err? then log err 
 			
 	getHistory: (cb) ->
@@ -54,26 +53,57 @@ module.exports = new class Repo
 		@_find 'users', {token}, callback
 		
 	createUser: (email, username, password, callback) ->
-		[salt, securePass] = @hashPassword password
-		@_insert 'users', {email, username, salt, password:securePass, token:randomText()}
+		if not callback then callback = -> {}
+		if not (email and username and password) then return callback 'invalid input' 
+		
+		email = email.toLowerCase()
+		username = username.toLowerCase()
+		
+		unless email.match /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,6}$/ then return callback "invalid email address"
+		unless password.length > 5 then return callback 'your password is too short'
+		
+		query = 
+			$or: [
+				{email}
+				{username}
+			]
+				
+		@_find 'users', query, (err, users) =>
+			if users.length>=1
+				user = users[0]
+				if email is user.email then return callback "that email is already in use"
+				else if username is user.username then return callback "that username is already in use"
+				
+			[salt, securePass] = @hashPassword password
+			user = {email, username, display:username, salt, password:securePass, token:@randomText()}
+			
+			@_insert 'users', user, (err) =>
+				if err then return callback err
+				@_find 'users', {username}, (err, users) ->
+					return callback null, users[0]
+				
 		
 	authUser: (email, password, callback) ->
 		unless callback then return
 		@_find 'users', {email}, (err, user) =>
 			if err
 				log 'user lookup err', err
-				return callback false
+				return callback err
 			else if user.length is 0
 				log 'user not found', email
-				return callback false
+				return callback null, null
 			else if user.length > 1 
 				log 'too many users found', email
-				return callback false
+				return callback 'too many users found', null
 			else user = user[0]
 			
 			securePass = @hash password, user.salt
 			log 'securepass', securePass
-			callback securePass is user.password
+			if securePass is user.password
+				callback null, user
+			else 
+				callback null, null
+				
 			 
 	hash: (msg, key) ->
 		crypto.createHmac("sha256", key).update(msg).digest "hex"
@@ -89,10 +119,8 @@ module.exports = new class Repo
 		return text
 
 	hashPassword: (password) ->
-		
-		
 			
-		salt = generateSalt()
+		salt = @randomText()
 		securePass = @hash password, salt
 		
 		return [salt, securePass]

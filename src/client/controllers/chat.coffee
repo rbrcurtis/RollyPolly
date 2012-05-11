@@ -2,6 +2,8 @@ Controller = require 'controllers/framework'
 
 module.exports = class ChatController extends Controller
 	
+	users: {}
+	
 	constructor: ->
 		super
 		@window  = $(window)
@@ -29,7 +31,7 @@ module.exports = class ChatController extends Controller
 			log "connected"
 			@panel.html ''
 		@socket.on 'chat', @_onChat
-		@socket.on 'login', @_login
+		@socket.on 'welcome', @_welcome
 		@socket.on 'join', @_join
 		@socket.on 'nick', @_nick
 		@socket.on 'part', @_part
@@ -45,38 +47,33 @@ module.exports = class ChatController extends Controller
 		log "chat deactivate!"
 		@socket.disconnect()
 		
+	avatar: (hash, s=20) ->
+		return "http://www.gravatar.com/avatar/#{hash}?d=monsterid&s=#{s}"
+		
 		
 	_onChat: (hash, msg) =>
 		user = $("##{hash}").attr('title')
-		@panel.append "<div class='chatMessage'><img src='http://unicornify.appspot.com/avatar/#{hash}?s=20'width='25' height='25' title='#{user}'/>#{msg}</div>"
+		@panel.append "<div class='chatMessage'><img src='#{@avatar hash, 20}' width='25' height='25' title='#{user}'/>#{msg}</div>"
 		@panel.scrollTop @panel[0].scrollHeight
-		notify user, msg, "http://unicornify.appspot.com/avatar/#{hash}?s=20"
+		notify user, msg, @avatar(hash, 20)
 			
-	getNickFromCookie: ->
-		if not document.cookie then return null
-		cs = document.cookie.split ';'
-		for c in cs
-			[key,val] = c.split('=')
-			if key.trim() is 'nick' then return val
-			
-		return null
-			
-	_login: (clear=false) =>
-		if not clear then nick = @getNickFromCookie()
-		while not nick?
-			nick = prompt "Please enter a nickname.  This can be changed with /nick"
-		@socket.emit 'login', nick
-		document.cookie = "nick=#{nick}"
+	_welcome: (@me) =>
+		log 'welcome', @me
+		@_join @me
+	
+	
+	_join: (user) =>
+		log 'join', user.display, user.hash
+		if $("##{user.hash}").length>0 then return
+		@header.append "<img id='#{user.hash}' src='#{@avatar user.hash, 40}' title='#{user.display}'/>"
 		
-	_join: (user,hash) =>
-		log 'join', {user,hash}
-		if $("##{hash}").length>0 then return
-		@header.append "<img id='#{hash}' src='http://unicornify.appspot.com/avatar/#{hash}?s=40' title='#{user}'/>"
-		
-	_nick: (oldUser, oldHash, user, hash) =>
-		@header.append "<img id='#{hash}' src='http://unicornify.appspot.com/avatar/#{hash}?s=40' title='#{user}'/>"
-		@_onChat oldHash, "<i>is now a pretty unicorn known as <img src='http://unicornify.appspot.com/avatar/#{hash}?s=20'width='25' height='25' title='#{user}'/></i>"
-		$("##{oldHash}").remove()
+	_nick: (user, nick) =>
+		u = $("##{user.hash}")
+		if not u.length
+			log 'nick notice for unknown user', nick
+			return
+		u.attr 'title', nick
+		@_onChat hash, "<i>is now known as #{nick}</i>"
 		
 	_part: (user, hash) =>
 		@_onChat hash, "<i>disconnected</i>"

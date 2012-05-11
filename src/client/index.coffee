@@ -9,8 +9,6 @@ module.exports = new class RollyPollyClient
 			
 		
 	run: ->
-		# @_resize()
-		# @window.resize @_resize
 		
 		@body.html require 'views/main'
 		
@@ -29,6 +27,3 @@ module.exports = new class RollyPollyClient
 		
 
 		require 'router'
-
-	# _resize: =>	
-		# @body.css 'height', (@window.height())+"px"

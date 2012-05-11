@@ -7,6 +7,8 @@ _           = require 'underscore'
 fs          = require 'fs'
 global.util = require 'util'
 
+global.CONFIG = require './config'
+
 global.notify = (title, msg, error = false) ->
 	if error and msg is 'The "sys" module is now called "util". It should have a similar interface.'
 		return
@@ -17,7 +19,7 @@ global.notify = (title, msg, error = false) ->
 	else
 		console.log "#{title} : #{msg}".green
 
-global.log = (msg, obj, depth = 0) ->
+global.log = (msg, obj, depth = 2) ->
 	if obj
 		console.log "#{new Date()} #{msg} : #{util.inspect obj, null, depth}"
 	else

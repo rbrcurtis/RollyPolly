@@ -1,7 +1,7 @@
 
-window.log = (msg, obj) ->
-	if obj
-		console.log "#{msg} : #{JSON.stringify obj}"
+window.log = (msg, obj...) ->
+	if obj?.length
+		console.log "#{msg} : ", obj...
 	else
 		console.log msg
 
