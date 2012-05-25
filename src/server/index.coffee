@@ -38,7 +38,7 @@ module.exports = new class App
 					module._compile(source, filename)
 					
 		bundleStylus = (req, res) ->
-			src = "#{process.env.PWD}/style"
+			src = "#{path}/style"
 			log 'styles', src
 		
 			fs.readdir src, (err, files) ->
