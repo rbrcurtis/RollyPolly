@@ -150,7 +150,7 @@ module.exports = new class App
 			
 			@_onLogin socket
 			
-	_serializeUser: (user) ->
+	serializeUser: (user) ->
 		return {username:user.username, display: user.display, hash: @_hash user.email}
 		
 	_onDisconnect: (socket) ->
@@ -180,7 +180,7 @@ module.exports = new class App
 				socket.emit 'login', true
 		else
 			msg = roller.parse msg
-			@io.sockets.emit 'chat', @_serializeUser(socket.user), msg
+			@io.sockets.emit 'chat', @serializeUser(socket.user), msg
 			repo.saveChatMsg socket.user._id, msg
 
 	_onNick: (socket, nick) ->
@@ -188,7 +188,7 @@ module.exports = new class App
 		
 		socket.user.display = nick
 		repo.updateDisplayName user
-		@io.sockets.emit 'nick', @_serializeUser(socket.user)
+		@io.sockets.emit 'nick', @serializeUser(socket.user)
 		
 	_onLogin: (socket) ->
 		log 'login', socket.user.username
@@ -197,10 +197,10 @@ module.exports = new class App
 		log 'socket length', Object.keys(@io.sockets.sockets).length
 		for id,s of @io.sockets.sockets
 			log 'socket', s.user.username
-			socket.emit 'join', @_serializeUser(s.user)
+			socket.emit 'join', @serializeUser(s.user)
 		
 		#tell everyone else this dude is online
-		@io.sockets.emit 'join', @_serializeUser(socket.user)
+		@io.sockets.emit 'join', @serializeUser(socket.user)
 		
 		repo.getHistory (err, history) =>
 			users = {}
@@ -210,7 +210,7 @@ module.exports = new class App
 				(msg, callback) =>
 					convert = (msg, user) =>
 						delete msg.userId
-						msg.user = @_serializeUser(user)
+						msg.user = @serializeUser(user)
 						
 					if users[msg.userId]
 						convert msg, users[msg.userId]
@@ -232,7 +232,7 @@ module.exports = new class App
 						else log "this dude has not disconnected"
 					else
 						@users[socket.user._id] = socket.user
-						@io.sockets.emit 'chat', @_serializeUser(socket.user), "<i>joined</i>"
+						@io.sockets.emit 'chat', @serializeUser(socket.user), "<i>joined</i>"
 						repo.saveChatMsg socket.user._id, "<i>joined</i>"
 			)
 
