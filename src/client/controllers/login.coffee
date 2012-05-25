@@ -14,6 +14,8 @@ module.exports = class LoginController extends Controller
 		@password = $('#password')
 		@register = $('#register')
 
+		@register.on 'click', ->route 'register'
+
 		@form.on 'submit', =>
 			
 			log 'ze login'
@@ -48,6 +50,5 @@ module.exports = class LoginController extends Controller
 	onComplete: (response) =>
 		
 			
-		@register.on 'click', ->route 'register'
 
 	
