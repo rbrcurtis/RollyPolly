@@ -98,10 +98,10 @@ module.exports = new class Repo
 				log 'user lookup err', err
 				return callback err
 			else if user.length is 0
-				log 'user not found', email
+				log 'user not found', identity
 				return callback null, null
 			else if user.length > 1 
-				log 'too many users found', email
+				log 'too many users found', identity
 				return callback 'too many users found', null
 			else user = user[0]
 			

@@ -97,13 +97,14 @@ module.exports = new class App
 	_login: (req, res) =>
 		log 'login', req.body
 		repo.authUser req.body.username, req.body.password, (err, user) =>
-			if err then return res.send err.toString()
+			if err then return res.send err.toString(), 500
+			unless user and user.length then return res.send "user not found", 401
 			
 			res.cookie CONFIG.cookies.auth.name, user.token,
 				expires: new Date(Date.now() + CONFIG.cookies.auth.lifetime)
 				httpOnly: true
 				# domain: CONFIG.cookies.auth.domain
-			res.send("success!")
+			res.send()
 		
 	_onAuthorization: (data, accept) =>
 		
