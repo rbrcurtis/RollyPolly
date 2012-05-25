@@ -155,14 +155,14 @@ module.exports = new class App
 		
 	_onDisconnect: (socket) ->
 		log "#{socket.user.username} disconnecting"
-		if not @users[socket.user._id] or @users[socket.user._id]._idleTimeout
+		if not @users[socket.user._id] or @users[socket.user._id]?._idleTimeout
 			return log 'already disced'
 			
 		user = socket.user
 		
 		@users[user._id] = setTimeout(
 			=>
-				if not @users[user._id]._idleTimeout?
+				if not @users[user._id]?._idleTimeout?
 					return log 'cancelling disc'
 				repo.saveChatMsg user._id, "<i>disconnected</i>"
 				@io.sockets.emit 'part', @serializeUser(user)

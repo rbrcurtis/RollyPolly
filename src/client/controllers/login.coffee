@@ -6,9 +6,8 @@ module.exports = class LoginController extends Controller
 
 	activate: ->
 		super
-		@body.append require 'views/login'
+		@body.append @view = $((require 'views/login')())
 		
-		@view = $('#loginWrapper')
 		@form = $('#loginForm')
 		@username = $('#username')
 		@password = $('#password')

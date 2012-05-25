@@ -6,9 +6,8 @@ module.exports = class RegisterController extends Controller
 
 	activate: ->
 		
-		@body.html require 'views/register'
+		@body.append @view = $((require 'views/register')())
 		
-		@view = $('#registerWrapper')
 		@form = $('#registerForm')
 		@email    = $('#email')
 		@username = $('#username')
