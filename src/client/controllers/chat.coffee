@@ -23,7 +23,7 @@ module.exports = class ChatController extends Controller
 		@input   = $('#chatInput')
 		
 		unless @socket
-			@socket = io.connect document.location.href
+			window.socket = @socket = io.connect document.location.href
 		else
 			@socket.socket.reconnect()
 	

@@ -25,6 +25,12 @@ global.log = (msg, obj, depth = 2) ->
 	else
 		console.log "#{new Date()} #{msg}"
 
+global.logError = (msg, obj, depth = 2) ->
+	if obj
+		console.log "[ERROR] #{new Date()} #{msg} : #{util.inspect obj, null, depth}".red
+	else
+		console.log "[ERROR] #{new Date()} #{msg}".red
+
 if process.env.PROC_MASTER
 
 	port = process.env.port or 8080
