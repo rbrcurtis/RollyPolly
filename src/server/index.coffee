@@ -16,7 +16,15 @@ repo		= require 'repo'
 
 module.exports = new class App
 	
+	users: {}
+	
 	run: (path, port) ->
+		
+		# setInterval(
+			# =>
+				# log 'users', @users
+			# 15000
+		# )
 		
 		BUNDLE = '/bundle.js'
 		CSSBUNDLE = '/bundle.css'
@@ -127,7 +135,7 @@ module.exports = new class App
 						return accept(null, false)
 				
 		catch ex
-			log "authentication exception: #{util.inspect ex}"
+			log "authentication exception", ex
 			return accept(null, false)
 	
 			
@@ -146,19 +154,21 @@ module.exports = new class App
 		return {username:user.username, display: user.display, hash: @_hash user.email}
 		
 	_onDisconnect: (socket) ->
-		log "#{socket.nick} disconnected"
+		log "#{socket.user.username} disconnecting"
+		if not @users[socket.user._id] or @users[socket.user._id]._idleTimeout
+			return log 'already disced'
+			
+		user = socket.user
 		
-		return
-		
-		for id,s of @io.sockets.sockets
-			if socket.nick is s.nick and s.id isnt socket.id
-				log "duplicate"
-				return
-			
-			
-		repo.saveChatMsg socket.user._id, "<i>disconnected</i>"
-		@io.sockets.emit 'part', socket.nick, socket.hash
-			
+		@users[user._id] = setTimeout(
+			=>
+				if not @users[user._id]._idleTimeout?
+					return log 'cancelling disc'
+				repo.saveChatMsg user._id, "<i>disconnected</i>"
+				@io.sockets.emit 'part', socket.nick, socket.hash
+				delete @users[user._id]
+			15000
+		)	
 	_onChat: (socket, msg) ->
 		msg = msg.trim()
 		if msg is '' then return
@@ -208,7 +218,14 @@ module.exports = new class App
 					
 				(err) =>
 					socket.emit 'history', history
-					@io.sockets.emit('chat', @_serializeUser(socket.user), "<i>joined</i>")
-					repo.saveChatMsg socket.user._id, "<i>joined</i>"
+					if @users[socket.user._id]?
+						if @users[socket.user._id]._idleTimeout?
+							log "clearing recent disc"
+							@users[socket.user._id] = socket.user
+						else log "this dude has not disconnected"
+					else
+						@users[socket.user._id] = socket.user
+						@io.sockets.emit('chat', @_serializeUser(socket.user), "<i>joined</i>")
+						repo.saveChatMsg socket.user._id, "<i>joined</i>"
 			)
 

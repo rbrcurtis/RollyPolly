@@ -38,7 +38,7 @@ module.exports = new class Repo
 		@_insert 'users', user
 						
 	saveChatMsg: (userId, msg) ->
-		log "save chat", userId, msg, 0
+		log "save chat", {userId, msg}, 0
 		@_insert 'messages', {userId, msg, time:new Date()}, (err) ->
 			if err? then log err 
 			
