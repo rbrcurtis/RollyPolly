@@ -17,10 +17,6 @@ module.exports = new class Repo
 		else Repo.queue.push cb
 		
 	_insert: (collection, doc, cb) ->
-		# if not doc._id
-			# cb "_id not set" if cb?
-			# return
-			
 		@_onReady =>
 			Repo.db.collection collection, (err, col) =>
 				return cb err if err?
@@ -43,14 +39,19 @@ module.exports = new class Repo
 						
 	saveChatMsg: (userId, msg) ->
 		log "save chat", userId, msg, 0
-		@_insert 'messages', {userId,msg,time:new Date()}, (err) ->
+		@_insert 'messages', {userId, msg, time:new Date()}, (err) ->
 			if err? then log err 
 			
 	getHistory: (cb) ->
-		@_find 'chat', {time:{$gt:new Date().getTime()-1000*60*60*24}}, cb
+		d = new Date()
+		d.setTime(d.getTime()-1000*60*60*24)
+		@_find 'messages', {time:{$gt:d}}, cb
 		
 	getUserByToken: (token, callback) ->
 		@_find 'users', {token}, callback
+
+	getUserById: (_id, callback) ->
+		@_find 'users', {_id}, callback
 		
 	createUser: (email, username, password, callback) ->
 		if not callback then callback = -> {}

@@ -9,6 +9,7 @@ nib			= require 'nib'
 sio			= require 'socket.io'
 crypto		= require 'crypto'
 jade		= require 'jade'
+async		= require 'async'
 
 roller		= require 'roller'
 repo		= require 'repo'
@@ -155,7 +156,7 @@ module.exports = new class App
 				return
 			
 			
-		repo.saveChatMsg socket.nick, socket.hash, "<i>disconnected</i>"
+		repo.saveChatMsg socket.user._id, "<i>disconnected</i>"
 		@io.sockets.emit 'part', socket.nick, socket.hash
 			
 	_onChat: (socket, msg) ->
@@ -169,26 +170,45 @@ module.exports = new class App
 				socket.emit 'login', true
 		else
 			msg = roller.parse msg
-			@io.sockets.emit 'chat', socket.hash, msg
-			repo.saveChatMsg socket.nick, socket.hash, msg
+			@io.sockets.emit 'chat', @_serializeUser(socket.user), msg
+			repo.saveChatMsg socket.user._id, msg
 
 	_onNick: (socket, nick) ->
 		log "#{socket.user.display} changing display name to '#{nick}'"
 		
 		socket.user.display = nick
 		repo.updateDisplayName user
-		@io.sockets.emit 'nick', @_serializeUser socket.user
+		@io.sockets.emit 'nick', @_serializeUser(socket.user)
 		
-	# TODO deprecate
 	_onLogin: (socket) ->
 		
 		for id,s of @io.sockets.sockets
-			socket.emit 'join', @_serializeUser socket.user
+			socket.emit 'join', @_serializeUser(socket.user)
 		
 		repo.getHistory (err, history) =>
-			log "history #{history.length}"
-			socket.emit 'history', history
-			@io.sockets.emit('chat', @_serializeUser(socket.user), "<i>joined</i>")
-			repo.saveChatMsg socket.user._id, "<i>joined</i>"
-		
+			users = {}
+			log "history", {err, length:history.length}
+			async.forEachSeries(
+				history
+				(msg, callback) =>
+					convert = (msg, user) =>
+						delete msg.userId
+						msg.user = @_serializeUser(user)
+						
+					if users[msg.userId]
+						convert msg, users[msg.userId]
+						callback null
+						
+					else repo.getUserById msg.userId, (err,userArr) =>
+						user = userArr[0]
+						if err then return callback err
+						users[msg.userId] = user
+						convert msg, user
+						callback null
+					
+				(err) =>
+					socket.emit 'history', history
+					@io.sockets.emit('chat', @_serializeUser(socket.user), "<i>joined</i>")
+					repo.saveChatMsg socket.user._id, "<i>joined</i>"
+			)
 

@@ -48,14 +48,15 @@ module.exports = class ChatController extends Controller
 		@socket.disconnect()
 		
 	avatar: (hash, s=20) ->
+		log 'hashing', hash
 		return "http://www.gravatar.com/avatar/#{hash}?d=monsterid&s=#{s}"
 		
 		
-	_onChat: (hash, msg) =>
-		user = $("##{hash}").attr('title')
-		@panel.append "<div class='chatMessage'><img src='#{@avatar hash, 20}' width='25' height='25' title='#{user}'/>#{msg}</div>"
+	_onChat: (user, msg) =>
+		log 'onchat', user, msg
+		@panel.append "<div class='chatMessage'><img src='#{@avatar user.hash, 20}' width='25' height='25' title='#{user.display}'/>#{msg}</div>"
 		@panel.scrollTop @panel[0].scrollHeight
-		notify user, msg, @avatar(hash, 20)
+		notify user.display, msg, @avatar(user.hash, 20)
 			
 	_welcome: (@me) =>
 		log 'welcome', @me
@@ -73,14 +74,14 @@ module.exports = class ChatController extends Controller
 			log 'nick notice for unknown user', nick
 			return
 		u.attr 'title', nick
-		@_onChat hash, "<i>is now known as #{nick}</i>"
+		@_onChat user, "<i>is now known as #{nick}</i>"
 		
 	_part: (user, hash) =>
-		@_onChat hash, "<i>disconnected</i>"
-		$("##{hash}").remove()
+		@_onChat user, "<i>disconnected</i>"
+		$("##{user.hash}").remove()
 		
 	_history: (msgs) =>
 		for msg in msgs
-			@_onChat msg.hash, msg.msg
+			@_onChat msg.user, msg.msg
 		
 
