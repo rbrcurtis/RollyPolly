@@ -84,9 +84,16 @@ module.exports = new class Repo
 					return callback null, users[0]
 				
 		
-	authUser: (email, password, callback) ->
+	authUser: (identity, password, callback) ->
 		unless callback then return
-		@_find 'users', {email}, (err, user) =>
+		
+		query = 
+			$or: [
+				{email:identity}
+				{username:identity}
+			]
+			
+		@_find 'users', query, (err, user) =>
 			if err
 				log 'user lookup err', err
 				return callback err

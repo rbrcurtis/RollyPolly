@@ -14,8 +14,7 @@ module.exports = class LoginController extends Controller
 
 		@form.on 'submit', =>
 			log 'submit!'
-			return false
 			
-		@register.on 'click', =>route 'register'
+		@register.on 'click', ->route 'register'
 
 	

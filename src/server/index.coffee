@@ -84,7 +84,7 @@ module.exports = new class App
 		crypto.createHash('md5').update(nick).digest("hex")
 		
 	_register: (req, res) =>
-		repo.createUser req.body.email, req.body.username, req.body.password, (err, user) ->
+		repo.createUser req.body.email, req.body.username, req.body.password, (err, user) =>
 			if err then return res.send err.toString()
 			
 			res.cookie CONFIG.cookies.auth.name, user.token,
@@ -95,8 +95,8 @@ module.exports = new class App
 		
 		
 	_login: (req, res) =>
-		authUser: (email, password, callback) ->
-		repo.authUser req.body.email, req.body.username, req.body.password, (err, user) =>
+		log 'login', req.body
+		repo.authUser req.body.username, req.body.password, (err, user) =>
 			if err then return res.send err.toString()
 			
 			res.cookie CONFIG.cookies.auth.name, user.token,
@@ -165,7 +165,7 @@ module.exports = new class App
 				if not @users[user._id]._idleTimeout?
 					return log 'cancelling disc'
 				repo.saveChatMsg user._id, "<i>disconnected</i>"
-				@io.sockets.emit 'part', socket.nick, socket.hash
+				@io.sockets.emit 'part', @serializeUser(user)
 				delete @users[user._id]
 			15000
 		)	
@@ -191,9 +191,16 @@ module.exports = new class App
 		@io.sockets.emit 'nick', @_serializeUser(socket.user)
 		
 	_onLogin: (socket) ->
+		log 'login', socket.user.username
 		
+		#tell this dude everyone else that is online
+		log 'socket length', Object.keys(@io.sockets.sockets).length
 		for id,s of @io.sockets.sockets
-			socket.emit 'join', @_serializeUser(socket.user)
+			log 'socket', s.user.username
+			socket.emit 'join', @_serializeUser(s.user)
+		
+		#tell everyone else this dude is online
+		@io.sockets.emit 'join', @_serializeUser(socket.user)
 		
 		repo.getHistory (err, history) =>
 			users = {}
@@ -225,7 +232,7 @@ module.exports = new class App
 						else log "this dude has not disconnected"
 					else
 						@users[socket.user._id] = socket.user
-						@io.sockets.emit('chat', @_serializeUser(socket.user), "<i>joined</i>")
+						@io.sockets.emit 'chat', @_serializeUser(socket.user), "<i>joined</i>"
 						repo.saveChatMsg socket.user._id, "<i>joined</i>"
 			)
 

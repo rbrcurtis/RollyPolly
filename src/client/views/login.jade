@@ -1,17 +1,17 @@
 #loginWrapper
 	#login
-		form#loginForm
+		form(action="/login", method="post")#loginForm
 			table
 				tr
 					td
 						label(for="username") username
 					td
-						input(type="text")#username
+						input(name="username", type="text")#username
 				tr
 					td
 						label(for="password") password
 					td
-						input(type="password")#password
+						input(name="password", type="password")#password
 				tr
 					td
 						input(type="submit")

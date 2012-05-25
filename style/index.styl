@@ -96,17 +96,20 @@ body, html
 	opacity:.9
 	
 	#login
-		background: white
-		border: 1px solid black
-		height:100px
-		width:200px
+		height:200px
+		width:300px
 		position: absolute
 		top:50%
 		margin-top:-100px
 		left: 50%
-		margin-left: -100px
+		margin-left: -150px
+		
 		
 		table
+			border: 1px solid black
+			background: white
+			position: relative
+			width: 300px
 			padding: 20px 10px
 			
 			td
@@ -114,6 +117,9 @@ body, html
 
 			input
 				width: 100px
+				
+			input[type=submit]
+				visibility: hidden
 				
 			#register
 				float: right
