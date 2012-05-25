@@ -21,7 +21,9 @@
 		"mongodb":"0.9.9-7",
 		"eco":"1.1.0-rc-3",
 		"jade":"0.25.0",
-		"nib":"0.4.1"
+		"nib":"0.4.1",
+		"async":"0.1.21",
+		"connect":"2.3.0"
 },
 	"description": "a basic chat server in nodejs with socket.io with dice rolling functionality."
 }
