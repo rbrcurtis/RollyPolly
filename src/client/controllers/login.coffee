@@ -44,7 +44,7 @@ module.exports = class LoginController extends Controller
 		
 	onError: (response) =>
 		log 'error', response
-		alert 'there was an error'
+		alert response.responseText
 		
 	onComplete: (response) =>
 		

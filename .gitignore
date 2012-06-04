@@ -2,3 +2,4 @@ node_modules
 ._*
 .project
 test.coffee
+.DS_Store

@@ -98,7 +98,7 @@ module.exports = new class App
 		log 'login', req.body
 		repo.authUser req.body.username, req.body.password, (err, user) =>
 			if err then return res.send err.toString(), 500
-			unless user and user.length then return res.send "user not found", 401
+			unless user then return res.send "user not found", 401
 			
 			res.cookie CONFIG.cookies.auth.name, user.token,
 				expires: new Date(Date.now() + CONFIG.cookies.auth.lifetime)

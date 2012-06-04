@@ -106,10 +106,10 @@ module.exports = new class Repo
 			else user = user[0]
 			
 			securePass = @hash password, user.salt
-			log 'securepass', securePass
+			log 'securepass', {securePass,user:user.password, auth: securePass is user.password}
 			if securePass is user.password
 				callback null, user
-			else 
+			else
 				callback null, null
 				
 			 
