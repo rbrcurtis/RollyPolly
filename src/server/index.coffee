@@ -156,7 +156,14 @@ module.exports = new class App
 		return {username:user.username, display: user.display, hash: @_hash user.email}
 		
 	_onDisconnect: (socket) ->
-		log "#{socket.user.username} disconnecting"
+		log "#{socket.user.username} #{socket.id} disconnecting"
+		log 'disconnecting', {user:socket.user.username, id:socket.id}
+		for id,s of @io.sockets.sockets
+			log 'socket', {user:s.user.username, id:s.id}
+			if id isnt socket.id and s.user.username is socket.user.username
+				log 'user logged in twice, escaping disc'
+				return
+			
 		if not @users[socket.user._id] or @users[socket.user._id]?._idleTimeout
 			return log 'already disced'
 			
@@ -166,6 +173,7 @@ module.exports = new class App
 			=>
 				if not @users[user._id]?._idleTimeout?
 					return log 'cancelling disc'
+				else log "#{user.username} finalizing disc"
 				# repo.saveChatMsg user._id, "<i>disconnected</i>"
 				@io.sockets.emit 'part', @serializeUser(user)
 				delete @users[user._id]
@@ -198,7 +206,7 @@ module.exports = new class App
 		#tell this dude everyone else that is online
 		log 'socket length', Object.keys(@io.sockets.sockets).length
 		for id,s of @io.sockets.sockets
-			log 'socket', s.user.username
+			log 'socket', {user:s.user.username, id:s.id}
 			socket.emit 'join', @serializeUser(s.user)
 			#tell everyone else this dude is online
 			if socket.id isnt id then s.emit 'join', @serializeUser(socket.user)
@@ -236,6 +244,6 @@ module.exports = new class App
 					else
 						@users[socket.user._id] = socket.user
 						# @io.sockets.emit 'chat', @serializeUser(socket.user), "<i>joined</i>"
-						repo.saveChatMsg socket.user._id, "<i>joined</i>"
+						# repo.saveChatMsg socket.user._id, "<i>joined</i>"
 			)
 
